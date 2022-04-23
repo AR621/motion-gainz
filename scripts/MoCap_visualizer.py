@@ -9,6 +9,8 @@ Created on Fri Apr 15 11:02:11 2022
 import matplotlib.pyplot as plt
 import csv
 import numpy as np
+from matplotlib.widgets import CheckButtons, Button  # going full user experience
+from time import sleep
 # %% pre-INIT
 from matplotlib.pyplot import close
 
@@ -17,6 +19,11 @@ close('all')
 # %% file name spec
 FILEPATH = '../data/'
 FILENAME = 'test_data.csv'
+
+show_axis = True
+follow_marker = False  # if one for stalking
+check_labels = ['show\naxis', 'follow\nmarker']
+check_options = [show_axis, follow_marker]
 
 
 # %% Function definitions
@@ -31,34 +38,6 @@ def read_movement_data():
                 movement.append(row)
 
         return movement
-
-
-def update_visualization(val):
-    # user def <- sadly had to do this that way since update fun can only accept single float callable
-    # (at least according to documentation)
-    marker_to_follow = 5  # in data samples used for development of this script the chest was
-    # marker 5 hence the pick arbitrary pick here
-    height = 2.2  # should be changed if your markers go over 2.2 m or near that value
-    offset = 1.5  # how far we look in x and y aka distance from center point of visualization*
-    # *defined by distance norm of norm = |x + y| aka square
-    follow_marker = False  # if one for stalking
-    # fun
-    frame_to_display = int(slider.val)
-    ax.cla()  # aka clean
-    markers_x = visualization[frame_to_display][:, 0]
-    markers_y = visualization[frame_to_display][:, 2]  # we remember to reverse y-axis with z for proper
-    # (at least for humans) orientation of the visualization
-    markers_z = visualization[frame_to_display][:, 1]
-    ax.scatter(markers_x, markers_y, markers_z, 'red', marker='.')
-    # defining the limits
-    if follow_marker:
-        ax.set_xlim(markers_x[marker_to_follow] - offset, markers_x[marker_to_follow] + offset)
-        ax.set_ylim(markers_y[marker_to_follow] - offset, markers_y[marker_to_follow] + offset)
-    else:
-        ax.set_xlim(-offset, offset)
-        ax.set_ylim(-offset, offset)
-    ax.set_zlim(0, height)
-    ax.axis('off')
 
 
 # %% import data
@@ -83,12 +62,80 @@ for frame in range(0, number_of_frames):
 plt.close(1)
 fig = plt.figure(1)
 fig.suptitle('~|mo-cap marker recording visualization by frame|~\n*click here to interact with slider*:')
-ax = fig.add_axes([0, 0, 1, 0.9], projection='3d')  # one for a plot
-axSlider = fig.add_axes([0.1, 0.9, 0.8, 0.1])  # one for a 'suwaczek gui'
 
+# positioning elements on the figure
+ax = fig.add_axes([0.05, 0, 1, 0.95], projection='3d')  # one for a plot
+axSlider = fig.add_axes([0.1, 0.9, 0.8, 0.1])  # one for a 'suwaczek gui'
+ax_check = fig.add_axes([0.0, 0.6, 0.15, 0.25])  # and finally one for checkboxes
+ax_btn_run = fig.add_axes([0.2, 0.05, 0.05, 0.05])  # and finally one for checkboxes
+
+# defining elements for later usage
+checkers = CheckButtons(ax_check, check_labels, (True, False))
 slider = plt.Slider(axSlider, 'frame', valmin=0, valmax=(number_of_frames - 1), valinit=1,
                     valfmt='%0.0f')  # valfmt since we only want integers
+button_run = Button(ax_btn_run, ' > ', color='green')
 
+
+# %% user interaction update functions
+
+
+def update_visualization(val):
+    # user def <- sadly here for now, in future plan to add simple options for that in the plot ui
+    marker_to_follow = 5  # in data samples used for development of this script the chest was
+    # marker 5 hence the arbitrary pick here
+    height = 2.2  # should be changed if your markers go over 2.2 m or near that value
+    offset = 1.5  # distance from center point of visualization*
+    # *defined by distance norm of n = |x + y| aka square
+
+    # fun
+    frame_to_display = int(slider.val)
+    ax.cla()  # aka clean
+    markers_x = visualization[frame_to_display][:, 0]
+    markers_y = visualization[frame_to_display][:, 2]  # we remember to reverse y-axis with z for proper
+    # (at least for humans) orientation of the visualization
+    markers_z = visualization[frame_to_display][:, 1]
+    ax.scatter(markers_x, markers_y, markers_z, 'red', marker='.')
+    # defining the limits
+    if check_options[1]:
+        ax.set_xlim(markers_x[marker_to_follow] - offset, markers_x[marker_to_follow] + offset)
+        ax.set_ylim(markers_y[marker_to_follow] - offset, markers_y[marker_to_follow] + offset)
+    else:
+        ax.set_xlim(-offset, offset)
+        ax.set_ylim(-offset, offset)
+    ax.set_zlim(0, height)
+    update_according_to_user_options()
+
+
+def handle_checkboxes(label):
+    index = check_labels.index(label)
+    check_options[index] = not check_options[index]  # since all our option are booleans
+    update_according_to_user_options()
+
+
+def update_according_to_user_options():
+    if check_options[0]:
+        ax.axis('on')
+    else:
+        ax.axis('off')
+    plt.draw()
+
+
+def handle_button_run(val):
+    current_frame = int(slider.val)
+    for animation_frame in range(current_frame, number_of_frames):
+        update_visualization(animation_frame)
+        slider.set_val(animation_frame)
+        print('frame ' + str(animation_frame))
+        sleep(0.1)
+        plt.show()
+
+
+# %% handle user interaction with ui
 slider.on_changed(update_visualization)
+checkers.on_clicked(handle_checkboxes)
+button_run.on_clicked(handle_button_run)
+# finishing setup
 update_visualization(0)  # initial plot <- cal for update function in frame 0
+update_according_to_user_options()
+
 fig.show()
