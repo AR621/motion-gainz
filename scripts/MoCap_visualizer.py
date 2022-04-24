@@ -67,14 +67,11 @@ fig.suptitle('~|mo-cap marker recording visualization by frame|~\n*click here to
 ax = fig.add_axes([0.05, 0, 1, 0.95], projection='3d')  # one for a plot
 axSlider = fig.add_axes([0.1, 0.9, 0.8, 0.1])  # one for a 'suwaczek gui'
 ax_check = fig.add_axes([0.0, 0.6, 0.15, 0.25])  # and finally one for checkboxes
-ax_btn_run = fig.add_axes([0.2, 0.05, 0.05, 0.05])  # and finally one for checkboxes
 
 # defining elements for later usage
 checkers = CheckButtons(ax_check, check_labels, (True, False))
 slider = plt.Slider(axSlider, 'frame', valmin=0, valmax=(number_of_frames - 1), valinit=1,
                     valfmt='%0.0f')  # valfmt since we only want integers
-button_run = Button(ax_btn_run, ' > ', color='green')
-
 
 # %% user interaction update functions
 
@@ -104,12 +101,14 @@ def update_visualization(val):
         ax.set_ylim(-offset, offset)
     ax.set_zlim(0, height)
     update_according_to_user_options()
+    plt.draw()
 
 
 def handle_checkboxes(label):
     index = check_labels.index(label)
     check_options[index] = not check_options[index]  # since all our option are booleans
     update_according_to_user_options()
+    update_visualization(frame)
 
 
 def update_according_to_user_options():
@@ -117,23 +116,11 @@ def update_according_to_user_options():
         ax.axis('on')
     else:
         ax.axis('off')
-    plt.draw()
-
-
-def handle_button_run(val):
-    current_frame = int(slider.val)
-    for animation_frame in range(current_frame, number_of_frames):
-        update_visualization(animation_frame)
-        slider.set_val(animation_frame)
-        print('frame ' + str(animation_frame))
-        sleep(0.1)
-        plt.show()
 
 
 # %% handle user interaction with ui
 slider.on_changed(update_visualization)
 checkers.on_clicked(handle_checkboxes)
-button_run.on_clicked(handle_button_run)
 # finishing setup
 update_visualization(0)  # initial plot <- cal for update function in frame 0
 update_according_to_user_options()
