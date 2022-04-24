@@ -32,11 +32,25 @@ the test CSV data contains one of the recorded actors doing five physical excerc
   <img src="https://github.com/AR621/motion-gainz/blob/main/showcase/pompeczka.gif?raw=true" width="200" />
 </p>
 
-- squat with barbell
-- deadlft
-- overhead push press
-- barbell rowing
-- standing bicep curl with barbell
+- squat with barbell <p>
+  <img src="https://github.com/AR621/motion-gainz/blob/main/showcase/squat.gif?raw=true" width="200" />
+</p>
+
+- deadlift <p>
+  <img src="https://github.com/AR621/motion-gainz/blob/main/showcase/deadlift.gif?raw=true" width="200" />
+</p>
+
+- overhead push press <p>
+  <img src="https://github.com/AR621/motion-gainz/blob/main/showcase/overhead.gif?raw=true" width="200" />
+</p>
+
+- barbell rowing <p>
+  <img src="https://github.com/AR621/motion-gainz/blob/main/showcase/rowing.gif?raw=true" width="200" />
+</p>
+
+- standing bicep curl with barbell <p>
+  <img src="https://github.com/AR621/motion-gainz/blob/main/showcase/curl.gif?raw=true" width="200" />
+</p>
 
 
 
