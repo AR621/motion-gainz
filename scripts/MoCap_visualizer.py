@@ -18,7 +18,7 @@ from matplotlib.pyplot import close
 close('all')
 # %% file name spec
 FILEPATH = '../data/'
-FILENAME = 'kamil-robi-cos.csv'
+FILENAME = 'test_data.csv'
 
 show_axis = True
 follow_marker = False  # if one for stalking
