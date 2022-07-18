@@ -51,9 +51,3 @@ the test CSV data contains one of the recorded actors doing five physical excerc
 - standing bicep curl with barbell <p>
   <img src="https://github.com/AR621/motion-gainz/blob/main/showcase/curl.gif?raw=true" width="200" />
 </p>
-
-
-
-# Future plans
-- Add ability to animate the visualization so it goes frame by frame
-- Make a simple classification NN model to classify each of the 6 excercises recorder in test data
